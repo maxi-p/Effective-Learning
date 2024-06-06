@@ -1,4 +1,4 @@
-package com.maxip.codeupload.bucket;
+package com.maxip.codeupload.config.aws.bucket;
 
 import org.springframework.core.env.Environment;
 
