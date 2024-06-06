@@ -1,4 +1,4 @@
-package com.maxip.codeupload.filestore;
+package com.maxip.codeupload.persistence.filestore;
 
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.s3.AmazonS3;

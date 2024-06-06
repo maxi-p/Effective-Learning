@@ -1,4 +1,4 @@
-package com.maxip.codeupload.config;
+package com.maxip.codeupload.config.aws;
 
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
