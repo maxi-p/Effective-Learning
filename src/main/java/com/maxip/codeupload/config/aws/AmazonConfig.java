@@ -20,8 +20,13 @@ public class AmazonConfig
     public static final String ACCESS_KEY_ID = "accessKeyId";
     public static final String SECRET_KEY = "secretKey";
 
+    private final Environment environment;
+
     @Autowired
-    private Environment environment;
+    public AmazonConfig(Environment environment)
+    {
+        this.environment = environment;
+    }
 
     @Bean
     public AmazonS3 s3()
