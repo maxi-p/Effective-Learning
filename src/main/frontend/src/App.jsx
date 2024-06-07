@@ -22,9 +22,17 @@ const UserProfiles = () =>
 
     return userProfiles.map((userProfile, index) => 
     {
+        if(userProfile.userProfileLatestCode)
+        {
+            axios.get(`http://localhost:8080/api/v1/${userProfile.uuid}/file/download`).then(res => 
+            {
+                console.log(res);
+            })
+        }
+
         return (
             <div key={index}>
-                {/* TODO: preview */}
+                {/* {userProfile.userProfileLatestCode? <img src={`http://localhost:8080/api/v1/${userProfile.uuid}/file/download`}/>: null} */}
                 <br/>
                 <br/>
                 <MyDropzone {...userProfile}/>

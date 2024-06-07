@@ -36,4 +36,9 @@ public class UserController
     {
         userProfileService.uploadUserProfileImage(userProfileId, file);
     }
+    @GetMapping(path = "{userProfileId}/file/download")
+    public byte[] downloadUsersLatestCode(@PathVariable("userProfileId") UUID userProfileId)
+    {
+        return userProfileService.downloadLatestCode(userProfileId);
+    }
 }
