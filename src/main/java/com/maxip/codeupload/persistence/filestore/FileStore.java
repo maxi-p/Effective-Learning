@@ -41,7 +41,7 @@ public class FileStore
         }
         catch (AmazonServiceException e)
         {
-            throw new IllegalStateException("Failed to save file to S3", e);
+            throw new IllegalStateException("Failed to save file to S3 "+ path+filename, e);
         }
 
     }
