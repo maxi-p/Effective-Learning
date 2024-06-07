@@ -7,15 +7,15 @@ import java.util.UUID;
 // For now there is not such thing as an @Entity...
 public class UserProfile
 {
-    private UUID uuid;
-    private String username;
-    private String userProfileImageLink;
+    private final UUID uuid;
+    private final String username;
+    private String userProfileLatestCode;
 
-    public UserProfile(UUID uuid, String username, String userProfileImageLink)
+    public UserProfile(UUID uuid, String username, String userProfileLatestCode)
     {
         this.uuid = uuid;
         this.username = username;
-        this.userProfileImageLink = userProfileImageLink;
+        this.userProfileLatestCode = userProfileLatestCode;
     }
 
     public UUID getUuid()
@@ -23,29 +23,19 @@ public class UserProfile
         return uuid;
     }
 
-    public void setUuid(UUID uuid)
-    {
-        this.uuid = uuid;
-    }
-
     public String getUsername()
     {
         return username;
     }
 
-    public void setUsername(String username)
+    public Optional<String> getUserProfileLatestCode()
     {
-        this.username = username;
+        return Optional.ofNullable(userProfileLatestCode);
     }
 
-    public Optional<String> getUserProfileImageLink()
+    public void setUserProfileLatestCode(String userProfileLatestCode)
     {
-        return Optional.ofNullable(userProfileImageLink);
-    }
-
-    public void setUserProfileImageLink(String userProfileImageLink)
-    {
-        this.userProfileImageLink = userProfileImageLink;
+        this.userProfileLatestCode = userProfileLatestCode;
     }
 
     @Override
@@ -56,12 +46,12 @@ public class UserProfile
         UserProfile that = (UserProfile) o;
         return Objects.equals(uuid, that.uuid) &&
                 Objects.equals(username, that.username) &&
-                Objects.equals(userProfileImageLink, that.userProfileImageLink);
+                Objects.equals(userProfileLatestCode, that.userProfileLatestCode);
     }
 
     @Override
     public int hashCode()
     {
-        return Objects.hash(uuid, username, userProfileImageLink);
+        return Objects.hash(uuid, username, userProfileLatestCode);
     }
 }

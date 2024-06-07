@@ -52,11 +52,22 @@ public class UserProfileService
         try
         {
             fileStore.save(path, filename, Optional.of(metadata), file.getInputStream());
+            user.setUserProfileLatestCode(filename);
         }
         catch (IOException e)
         {
             throw new IllegalStateException("Something is wrong with the file stream: ", e);
         }
+    }
+
+    public byte[] downloadLatestCode(UUID uuid)
+    {
+        UserProfile user = getUserOrExcept(uuid);
+        String bucket = environment.getProperty(BUCKET_NAME);
+
+        return user.getUserProfileLatestCode()
+                .map(key -> fileStore.download(bucket,key))
+                .orElse(new byte[0]);
     }
 
     private static Map<String, String> getMetaData(MultipartFile file)

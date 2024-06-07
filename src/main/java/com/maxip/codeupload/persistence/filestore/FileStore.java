@@ -3,9 +3,12 @@ package com.maxip.codeupload.persistence.filestore;
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.S3Object;
+import com.amazonaws.util.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 import java.util.Optional;
@@ -44,5 +47,18 @@ public class FileStore
             throw new IllegalStateException("Failed to save file to S3 "+ path+filename, e);
         }
 
+    }
+
+    public byte[] download(String bucket, String key)
+    {
+        try
+        {
+            S3Object code = s3.getObject(bucket, key);
+            return IOUtils.toByteArray(code.getObjectContent());
+        }
+        catch (AmazonServiceException | IOException e)
+        {
+            throw new IllegalStateException("Failed to download file from S3: " + bucket + key, e);
+        }
     }
 }
