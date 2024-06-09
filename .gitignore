@@ -37,3 +37,4 @@ build/
 
 ### Credentials ###
 credentials/
+application.yml
