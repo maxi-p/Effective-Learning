@@ -1,17 +1,26 @@
 package com.maxip.codeupload.persistence.entity;
 
 import jakarta.persistence.*;
+import org.springframework.security.core.parameters.P;
 
 import java.util.List;
 
 @Entity
 public class Role
 {
-    private Long id;
     @Column(unique = true, nullable = false)
-    private String name;
+    private String      name;
+    private Long        id;
+    private List<User>  users;
 
-    private List<User> users;
+    public Role()
+    {
+    }
+
+    public Role(String name)
+    {
+        this.name = name;
+    }
 
     @ManyToMany(mappedBy = "roles")
     public List<User> getUsers()
