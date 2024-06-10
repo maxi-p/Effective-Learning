@@ -6,6 +6,7 @@ import com.maxip.codeupload.persistence.entity.User;
 import com.maxip.codeupload.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
@@ -18,22 +19,12 @@ public class UserController
     @Autowired
     private UserService userService;
 
-    @GetMapping(value = "/adduUser")
-    public HttpStatus insertUser()
+    @GetMapping(value = "/test-authorization")
+    public ResponseEntity<String> checkAuthorization()
     {
-        User user = new User();
-        Privilege privilege = new Privilege();
-        Role role = new Role();
-        user.setUsername("max");
-        privilege.setName("write");
-        role.setName("admin");
-
-        role.setPrivileges(Arrays.asList(privilege));
-        user.setRoles(Arrays.asList(role));
-
-
-        return userService.addUser(user) ? HttpStatus.CREATED : HttpStatus.BAD_REQUEST;
+        return ResponseEntity.ok("Authorization successful");
     }
+
 //    private final UserProfileService userProfileService;
 //
 //    @Autowired

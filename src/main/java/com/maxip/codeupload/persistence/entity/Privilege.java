@@ -13,6 +13,16 @@ public class Privilege
 
     public List<Role> roles;
 
+    public Privilege()
+    {
+
+    }
+
+    public Privilege(String name)
+    {
+        this.name = name;
+    }
+
     @ManyToMany(mappedBy = "privileges")
     public List<Role> getRoles()
     {
