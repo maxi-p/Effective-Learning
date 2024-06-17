@@ -19,10 +19,21 @@ public class UserController
     @Autowired
     private UserService userService;
 
-    @GetMapping(value = "/test-authorization")
+    @GetMapping(value = "/user")
     public ResponseEntity<String> checkAuthorization()
     {
         return ResponseEntity.ok("Authorization successful");
+    }
+
+    @GetMapping(value = "/moderator")
+    public ResponseEntity<String> checkModerator()
+    {
+        return ResponseEntity.ok("Moderator successful");
+    }
+    @GetMapping(value = "/admin")
+    public ResponseEntity<String> checkAdmin()
+    {
+        return ResponseEntity.ok("Admin successful");
     }
 
 //    private final UserProfileService userProfileService;

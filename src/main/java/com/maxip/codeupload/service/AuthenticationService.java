@@ -34,6 +34,11 @@ public class AuthenticationService
             throw new RuntimeException("User with such username already exists: " + request.getUsername());
         }
 
+        if (request.getUsername().equals("nonExistentUserTest"))
+        {
+            throw new RuntimeException("Reserved username (for testing): " + request.getUsername());
+        }
+
         User user = new User();
         user.setUsername(request.getUsername());
         user.setFirstName(request.getFirstName());

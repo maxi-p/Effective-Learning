@@ -54,16 +54,19 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
 
         List<Privilege> adminPrivileges     = Arrays.asList(readPrivilege, writePrivilege, deletePrivilege);
         List<Privilege> managerPrivileges   = Arrays.asList(readPrivilege, writePrivilege);
+        List<Privilege> userPrivileges      = Arrays.asList(readPrivilege);
 
         createRoleIfNotFound(ROLE_ADMIN, adminPrivileges);
         createRoleIfNotFound(ROLE_MODERATOR, managerPrivileges);
-        createRoleIfNotFound(ROLE_USER, Arrays.asList(readPrivilege));
+        createRoleIfNotFound(ROLE_USER, userPrivileges);
 
         Role adminRole      = roleRepository.findByName(ROLE_ADMIN);
-        Role moderatorRole    = roleRepository.findByName(ROLE_MODERATOR);
+        Role moderatorRole  = roleRepository.findByName(ROLE_MODERATOR);
+        Role userRole       = roleRepository.findByName(ROLE_USER);
 
         createUserIfNotFound("Max", "Petrushin","maxi-p", adminRole, "asd");
-        createUserIfNotFound("Gena", "Matchanov","genjik", adminRole, "asd");
+        createUserIfNotFound("Gena", "Matchanov","genjik", moderatorRole, "asd");
+        createUserIfNotFound("Islam", "Djalgasbaev","id13", userRole, "asd");
 
         isAlreadyConfigured = true;
     }
