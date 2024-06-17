@@ -1,8 +1,5 @@
 package com.maxip.codeupload.filter;
 
-import com.maxip.codeupload.config.SecurityConfig;
-import com.maxip.codeupload.persistence.entity.User;
-import com.maxip.codeupload.security.DefaultUserDetailsService;
 import com.maxip.codeupload.service.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -13,7 +10,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -23,8 +19,8 @@ import java.io.IOException;
 @Component
 public class JWTAuthFilter extends OncePerRequestFilter
 {
-    private final JwtService jwtService;
-    private final UserDetailsService userDetailsService;
+    private final JwtService            jwtService;
+    private final UserDetailsService    userDetailsService;
 
     @Override
     protected void doFilterInternal(
@@ -36,8 +32,6 @@ public class JWTAuthFilter extends OncePerRequestFilter
         final String jwt;
         final String username;
 
-        System.out.println(authHeader);
-
         if(authHeader == null || !authHeader.startsWith("Bearer "))
         {
             filterChain.doFilter(request, response);
@@ -46,7 +40,7 @@ public class JWTAuthFilter extends OncePerRequestFilter
 
         jwt = authHeader.substring(7);
         username = jwtService.extractUsername(jwt);
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null)
+        if (username != null)
         {
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
             if (jwtService.isTokenValid(jwt, userDetails))
@@ -56,9 +50,7 @@ public class JWTAuthFilter extends OncePerRequestFilter
                         null,
                         userDetails.getAuthorities()
                 );
-                authToken.setDetails(
-                        new WebAuthenticationDetailsSource().buildDetails(request)
-                );
+                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }
         }
@@ -68,7 +60,7 @@ public class JWTAuthFilter extends OncePerRequestFilter
 
     public JWTAuthFilter(JwtService jwtService, UserDetailsService userDetailsService)
     {
-        this.jwtService = jwtService;
+        this.jwtService         = jwtService;
         this.userDetailsService = userDetailsService;
     }
 }
