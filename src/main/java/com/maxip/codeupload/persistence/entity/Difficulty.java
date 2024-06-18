@@ -5,25 +5,14 @@ import jakarta.persistence.*;
 import java.util.List;
 
 @Entity
-public class Privilege
+public class Difficulty
 {
-    private Long        id;
-    private String      name;
-    public  List<Role>  roles;
+    private Long                id;
+    private List<CodingProblem> codingProblems;
+    private String              name;
 
-    public Privilege()
+    public Difficulty()
     {
-    }
-
-    @ManyToMany(mappedBy = "privileges")
-    public List<Role> getRoles()
-    {
-        return roles;
-    }
-
-    public void setRoles(List<Role> roles)
-    {
-        this.roles = roles;
     }
 
     @Id
@@ -36,6 +25,17 @@ public class Privilege
     public void setId(Long id)
     {
         this.id = id;
+    }
+
+    @OneToMany(mappedBy = "difficulty", fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+    public List<CodingProblem> getCodingProblems()
+    {
+        return codingProblems;
+    }
+
+    public void setCodingProblems(List<CodingProblem> codingProblems)
+    {
+        this.codingProblems = codingProblems;
     }
 
     @Column(nullable = false, unique = true)
