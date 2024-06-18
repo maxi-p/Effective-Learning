@@ -8,18 +8,12 @@ import java.util.List;
 @Entity
 public class Role
 {
-    @Column(unique = true, nullable = false)
     private String      name;
     private Long        id;
     private List<User>  users;
 
     public Role()
     {
-    }
-
-    public Role(String name)
-    {
-        this.name = name;
     }
 
     @ManyToMany(mappedBy = "roles")
@@ -36,7 +30,7 @@ public class Role
     private List<Privilege> privileges;
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
-    @JoinTable(name = "role_privilege", joinColumns = @JoinColumn(name = "role_id"), inverseJoinColumns = @JoinColumn(name = "privilege_id"))
+    @JoinTable(name = "join_role_privilege", joinColumns = @JoinColumn(name = "role_id"), inverseJoinColumns = @JoinColumn(name = "privilege_id"))
     public List<Privilege> getPrivileges()
     {
         return privileges;
@@ -59,7 +53,7 @@ public class Role
         this.id = id;
     }
 
-    @Column(nullable = false)
+    @Column(unique = true, nullable = false)
     public String getName()
     {
         return name;

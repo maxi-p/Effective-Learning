@@ -5,6 +5,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import javax.security.auth.Subject;
 import java.util.Collection;
 import java.util.List;
 
@@ -12,23 +13,25 @@ import java.util.List;
 @Table(name = "app_user")
 public class User
 {
-    private Long id;
-    private String email;
-    @Column(unique = true, nullable = false)
-    private String username;
-    private String firstName;
-    private String lastName;
-    private String password;
-    private Boolean locked;
-    private Boolean enabled;
-    private Boolean expired;
-    private String userProfileLatestCode;
-    private List<Role> roles;
+    private Long                    id;
+    private String                  username;
+    private String                  email;
+    private String                  firstName;
+    private String                  lastName;
+    private String                  password;
+    private Boolean                 locked;
+    private Boolean                 enabled;
+    private Boolean                 expired;
+    private String                  userProfileLatestCode;
+    private List<CodingProblem>     codingProblems;
+    private List<SubjectCategory>   subjectCategories;
+    private List<Note>              notes;
+    private List<Role>              roles;
 
     // Setters and Getters
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
-    @JoinTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
+    @JoinTable(name = "join_user_role", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
     public List<Role> getRoles()
     {
         return roles;
@@ -51,7 +54,7 @@ public class User
         this.id = id;
     }
 
-    @Column(nullable = false)
+    @Column(unique = true, nullable = false)
     public String getUsername()
     {
         return username;
@@ -60,6 +63,39 @@ public class User
     public void setUsername(String username)
     {
         this.username = username;
+    }
+
+    @OneToMany(mappedBy = "user")
+    public List<CodingProblem> getCodingProblems()
+    {
+        return codingProblems;
+    }
+
+    public void setCodingProblems(List<CodingProblem> codingProblems)
+    {
+        this.codingProblems = codingProblems;
+    }
+
+    @OneToMany(mappedBy = "user")
+    public List<SubjectCategory> getSubjectCategories()
+    {
+        return subjectCategories;
+    }
+
+    public void setSubjectCategories(List<SubjectCategory> subjectCategories)
+    {
+        this.subjectCategories = subjectCategories;
+    }
+
+    @OneToMany(mappedBy = "user")
+    public List<Note> getNotes()
+    {
+        return notes;
+    }
+
+    public void setNotes(List<Note> notes)
+    {
+        this.notes = notes;
     }
 
     public String getUserProfileLatestCode()
