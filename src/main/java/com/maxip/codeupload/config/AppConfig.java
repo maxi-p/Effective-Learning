@@ -42,5 +42,4 @@ public class AppConfig {
     public UserDetailsService userDetailsService() {
         return new DefaultUserDetailsService();
     }
-
 }

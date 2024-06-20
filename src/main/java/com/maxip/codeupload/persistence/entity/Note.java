@@ -1,5 +1,6 @@
 package com.maxip.codeupload.persistence.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 @Entity
@@ -47,6 +48,7 @@ public class Note
         this.value = value;
     }
 
+    @JsonIgnore
     @ManyToOne
     public User getUser()
     {

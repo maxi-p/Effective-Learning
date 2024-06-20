@@ -1,8 +1,11 @@
 package com.maxip.codeupload.persistence.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.util.List;
+import java.util.Set;
+import java.util.Set;
 
 @Entity
 public class CodingProblem
@@ -37,6 +40,7 @@ public class CodingProblem
     @JoinTable(name = "join_problem_categories",
             joinColumns = @JoinColumn(name = "coding_problem_id"),
             inverseJoinColumns = @JoinColumn(name = "subject_category_id"))
+    @OrderBy(value="id")
     public List<SubjectCategory> getSubjectCategory()
     {
         return subjectCategory;
@@ -47,7 +51,8 @@ public class CodingProblem
         this.subjectCategory = subjectCategory;
     }
 
-    @OneToMany(mappedBy = "codingProblem", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @OneToMany(fetch = FetchType.EAGER)
+    @OrderBy(value = "id")
     public List<Algorithm> getAlgorithms()
     {
         return algorithms;
@@ -59,6 +64,7 @@ public class CodingProblem
     }
 
     @ManyToOne
+    @JsonIgnore
     public User getUser()
     {
         return user;
@@ -70,6 +76,7 @@ public class CodingProblem
     }
 
     @ManyToOne
+    @OrderBy(value="id")
     public Difficulty getDifficulty()
     {
         return difficulty;
@@ -151,7 +158,7 @@ public class CodingProblem
         this.memory = memory;
     }
 
-    public boolean isSolved()
+    public boolean getSolved()
     {
         return solved;
     }
@@ -159,5 +166,11 @@ public class CodingProblem
     public void setSolved(boolean solved)
     {
         this.solved = solved;
+    }
+
+    @Override
+    public String toString()
+    {
+        return "CodingProblem{" + "id=" + id + ", name='" + name + '\'' + ", algorithms=" + algorithms + ", subjectCategory=" + subjectCategory + ", difficulty=" + difficulty + '}';
     }
 }

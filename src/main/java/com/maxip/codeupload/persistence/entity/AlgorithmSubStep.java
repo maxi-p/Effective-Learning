@@ -1,5 +1,6 @@
 package com.maxip.codeupload.persistence.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 @Entity
@@ -8,7 +9,6 @@ public class AlgorithmSubStep
     private Long        id;
     private Long        stepNumber;
     private String      description;
-    private Algorithm   algorithm;
 
     public AlgorithmSubStep()
     {
@@ -34,17 +34,6 @@ public class AlgorithmSubStep
     public void setStepNumber(Long stepNumber)
     {
         this.stepNumber = stepNumber;
-    }
-
-    @ManyToOne
-    public Algorithm getAlgorithm()
-    {
-        return algorithm;
-    }
-
-    public void setAlgorithm(Algorithm algorithm)
-    {
-        this.algorithm = algorithm;
     }
 
     public String getDescription()

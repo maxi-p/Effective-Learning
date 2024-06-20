@@ -3,25 +3,26 @@ package com.maxip.codeupload.persistence.entity;
 import jakarta.persistence.*;
 
 import java.util.List;
+import java.util.Set;
 
 @Entity
 public class Privilege
 {
     private Long        id;
     private String      name;
-    public  List<Role>  roles;
+    public  Set<Role>  roles;
 
     public Privilege()
     {
     }
 
     @ManyToMany(mappedBy = "privileges")
-    public List<Role> getRoles()
+    public Set<Role> getRoles()
     {
         return roles;
     }
 
-    public void setRoles(List<Role> roles)
+    public void setRoles(Set<Role> roles)
     {
         this.roles = roles;
     }

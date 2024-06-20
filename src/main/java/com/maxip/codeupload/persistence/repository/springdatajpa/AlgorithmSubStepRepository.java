@@ -6,5 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface AlgorithmSubStepRepository extends JpaRepository<AlgorithmSubStep, Long>
 {
-    public AlgorithmSubStep findByAlgorithmAndStepNumberAndDescription(Algorithm algorithm, Long stepNumber, String description);
+    public AlgorithmSubStep findByDescription(String description);
 }
