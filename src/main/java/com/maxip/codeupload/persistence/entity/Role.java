@@ -4,39 +4,40 @@ import jakarta.persistence.*;
 import org.springframework.security.core.parameters.P;
 
 import java.util.List;
+import java.util.Set;
 
 @Entity
 public class Role
 {
     private String      name;
     private Long        id;
-    private List<User>  users;
+    private Set<User>  users;
 
     public Role()
     {
     }
 
     @ManyToMany(mappedBy = "roles")
-    public List<User> getUsers()
+    public Set<User> getUsers()
     {
         return users;
     }
 
-    public void setUsers(List<User> users)
+    public void setUsers(Set<User> users)
     {
         this.users = users;
     }
 
-    private List<Privilege> privileges;
+    private Set<Privilege> privileges;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "join_role_privilege", joinColumns = @JoinColumn(name = "role_id"), inverseJoinColumns = @JoinColumn(name = "privilege_id"))
-    public List<Privilege> getPrivileges()
+    public Set<Privilege> getPrivileges()
     {
         return privileges;
     }
 
-    public void setPrivileges(List<Privilege> privileges)
+    public void setPrivileges(Set<Privilege> privileges)
     {
         this.privileges = privileges;
     }

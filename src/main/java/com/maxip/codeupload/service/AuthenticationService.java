@@ -45,7 +45,7 @@ public class AuthenticationService
         user.setLastName(request.getLastName());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setEnabled(true);
-        user.setRoles(Arrays.asList(roleRepository.findByName("ROLE_USER")));
+        user.setRoles(new HashSet<>(Arrays.asList(roleRepository.findByName("ROLE_USER"))));
 
         userRepository.save(user);
         var jwtToken = jwtService.generateToken(userDetailsService.loadUserByUsername(user.getUsername()));

@@ -6,5 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface SubjectCategoryRepository extends JpaRepository<SubjectCategory, Long>
 {
-    public SubjectCategory findByNameAndUser(String username, User user);
+    SubjectCategory findByName(String name);
 }

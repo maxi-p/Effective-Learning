@@ -66,9 +66,9 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
         Privilege writePrivilege = createPrivilegeIfNotFound(WRITE_PRIVILEGE);
         Privilege deletePrivilege = createPrivilegeIfNotFound(DELETE_PRIVILEGE);
 
-        List<Privilege> adminPrivileges = Arrays.asList(readPrivilege, writePrivilege, deletePrivilege);
-        List<Privilege> managerPrivileges = Arrays.asList(readPrivilege, writePrivilege);
-        List<Privilege> userPrivileges = Arrays.asList(readPrivilege);
+        Set<Privilege> adminPrivileges  = new HashSet<>(Arrays.asList(readPrivilege, writePrivilege, deletePrivilege));
+        Set<Privilege> managerPrivileges= new HashSet<>(Arrays.asList(readPrivilege, writePrivilege));
+        Set<Privilege> userPrivileges   = new HashSet<>(Arrays.asList(readPrivilege));
 
         Role adminRole = createRoleIfNotFound(ROLE_ADMIN, adminPrivileges);
         Role moderatorRole = createRoleIfNotFound(ROLE_MODERATOR, managerPrivileges);
@@ -85,17 +85,17 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
         Difficulty medium = createDifficultyIfNotFound(MEDIUM);
         Difficulty hard = createDifficultyIfNotFound(HARD);
 
-        SubjectCategory java_api = createSubjectCategoryIfNotFound(JAVA_API, max);
-        SubjectCategory dynamic_programming = createSubjectCategoryIfNotFound(DYNAMIC_PROGRAMMING, max);
-        SubjectCategory trees = createSubjectCategoryIfNotFound(TREES, max);
+        SubjectCategory java_api = createSubjectCategoryIfNotFound(JAVA_API);
+        SubjectCategory dynamic_programming = createSubjectCategoryIfNotFound(DYNAMIC_PROGRAMMING);
+        SubjectCategory trees = createSubjectCategoryIfNotFound(TREES);
 
         Note n1 = createNoteIfNotFound("str.chartAt( index);","returns a primitive char at that index of a string", max, java_api);
 
-        CodingProblem p1 = createCodingProblemIfNotFound("efficient cost dp", max, Arrays.asList(dynamic_programming), hard);
-        CodingProblem p2 = createCodingProblemIfNotFound("wave frequency maximum message distance", max, Arrays.asList(trees), hard);
+        CodingProblem p1 = createCodingProblemIfNotFound("efficient cost dp", max, Collections.singletonList(dynamic_programming), hard);
+        CodingProblem p2 = createCodingProblemIfNotFound("wave frequency maximum message distance", max, Collections.singletonList(trees), hard);
 
-        Algorithm a1 = createAlgorithmIfNotFound("","finding the partition subarray",p1);
-        Algorithm a2 = createAlgorithmIfNotFound("","find the longest simple path between two nodes which is called the diameter if the graph is the tree",p2);
+        Algorithm a1 = createAlgorithmIfNotFound("partition subarray","finding the partition subarray",p1);
+        Algorithm a2 = createAlgorithmIfNotFound("longest path between nodes","find the longest simple path between two nodes which is called the diameter if the graph is the tree",p2);
 
         AlgorithmSubStep s1 = createAlgorithmSubStepIfNotFound(a1, 1L, "walk the array");
         AlgorithmSubStep s2 = createAlgorithmSubStepIfNotFound(a1, 2L, "you have a choise wether to place the separator AFTER the current index or not");
@@ -122,7 +122,7 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
             user.setFirstName(firstname);
             user.setLastName(lastname);
             user.setPassword(passwordEncoder.encode(password));
-            user.setRoles(Arrays.asList(role));
+            user.setRoles(new HashSet<>(Arrays.asList(role)));
             user.setEnabled(true);
             userRepository.save(user);
         }
@@ -143,7 +143,7 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
     }
 
     @Transactional
-    private Role createRoleIfNotFound(String name, List<Privilege> privileges)
+    private Role createRoleIfNotFound(String name, Set<Privilege> privileges)
     {
         Role role = roleRepository.findByName(name);
         if (role == null)
@@ -170,14 +170,13 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
     }
 
     @Transactional
-    private SubjectCategory createSubjectCategoryIfNotFound(String name, User user)
+    private SubjectCategory createSubjectCategoryIfNotFound(String name)
     {
-        SubjectCategory subjectCategory = subjectCategoryRepository.findByNameAndUser(name, user);
+        SubjectCategory subjectCategory = subjectCategoryRepository.findByName(name);
         if (subjectCategory == null)
         {
             subjectCategory = new SubjectCategory();
             subjectCategory.setName(name);
-            subjectCategory.setUser(user);
             subjectCategoryRepository.save(subjectCategory);
         }
         return subjectCategory;
@@ -210,6 +209,7 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
             problem.setUser(user);
             problem.setSubjectCategory(subjectCategory);
             problem.setDifficulty(difficulty);
+            problem.setAlgorithms(new ArrayList<>());
             codingProblemRepository.save(problem);
         }
         return problem;
@@ -218,28 +218,30 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
     @Transactional
     private Algorithm createAlgorithmIfNotFound(String name, String description, CodingProblem codingProblem)
     {
-        Algorithm algorithm = algorithmRepository.findByNameAndDescription(name, description);
+        Algorithm algorithm = algorithmRepository.findByName(name);
         if (algorithm == null)
         {
             algorithm = new Algorithm();
             algorithm.setName(name);
             algorithm.setDescription(description);
-            algorithm.setCodingProblem(codingProblem);
-            algorithmRepository.save(algorithm);
+            algorithm.setAlgorithmSubSteps(new ArrayList<>());
+            algorithm = algorithmRepository.save(algorithm);
+            codingProblem.getAlgorithms().add(algorithm);
         }
         return algorithm;
     }
 
+    @Transactional
     private AlgorithmSubStep createAlgorithmSubStepIfNotFound(Algorithm algorithm, Long stepNumber, String description)
     {
-        AlgorithmSubStep algorithmSubStep = algorithmSubStepRepository.findByAlgorithmAndStepNumberAndDescription(algorithm, stepNumber, description);
+        AlgorithmSubStep algorithmSubStep = algorithmSubStepRepository.findByDescription(description);
         if (algorithmSubStep == null)
         {
             algorithmSubStep = new AlgorithmSubStep();
-            algorithmSubStep.setAlgorithm(algorithm);
             algorithmSubStep.setStepNumber(stepNumber);
             algorithmSubStep.setDescription(description);
-            algorithmSubStepRepository.save(algorithmSubStep);
+            algorithmSubStep = algorithmSubStepRepository.save(algorithmSubStep);
+            algorithm.getAlgorithmSubSteps().add(algorithmSubStep);
         }
         return algorithmSubStep;
     }

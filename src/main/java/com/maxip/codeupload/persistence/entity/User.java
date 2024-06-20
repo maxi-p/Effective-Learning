@@ -1,5 +1,6 @@
 package com.maxip.codeupload.persistence.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -8,36 +9,35 @@ import org.springframework.security.core.userdetails.UserDetails;
 import javax.security.auth.Subject;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "app_user")
 public class User
 {
-    private Long                    id;
-    private String                  username;
-    private String                  email;
-    private String                  firstName;
-    private String                  lastName;
-    private String                  password;
-    private Boolean                 locked;
-    private Boolean                 enabled;
-    private Boolean                 expired;
-    private String                  userProfileLatestCode;
-    private List<CodingProblem>     codingProblems;
-    private List<SubjectCategory>   subjectCategories;
-    private List<Note>              notes;
-    private List<Role>              roles;
+    private Long        id;
+    private String      username;
+    private String      email;
+    private String      firstName;
+    private String      lastName;
+    private String      password;
+    private Boolean     locked;
+    private Boolean     enabled;
+    private Boolean     expired;
+    private String      userProfileLatestCode;
+    private Set<Note>   notes;
+    private Set<Role>   roles;
 
     // Setters and Getters
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "join_user_role", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
-    public List<Role> getRoles()
+    public Set<Role> getRoles()
     {
         return roles;
     }
 
-    public void setRoles(List<Role> roles)
+    public void setRoles(Set<Role> roles)
     {
         this.roles = roles;
     }
@@ -66,34 +66,12 @@ public class User
     }
 
     @OneToMany(mappedBy = "user")
-    public List<CodingProblem> getCodingProblems()
-    {
-        return codingProblems;
-    }
-
-    public void setCodingProblems(List<CodingProblem> codingProblems)
-    {
-        this.codingProblems = codingProblems;
-    }
-
-    @OneToMany(mappedBy = "user")
-    public List<SubjectCategory> getSubjectCategories()
-    {
-        return subjectCategories;
-    }
-
-    public void setSubjectCategories(List<SubjectCategory> subjectCategories)
-    {
-        this.subjectCategories = subjectCategories;
-    }
-
-    @OneToMany(mappedBy = "user")
-    public List<Note> getNotes()
+    public Set<Note> getNotes()
     {
         return notes;
     }
 
-    public void setNotes(List<Note> notes)
+    public void setNotes(Set<Note> notes)
     {
         this.notes = notes;
     }

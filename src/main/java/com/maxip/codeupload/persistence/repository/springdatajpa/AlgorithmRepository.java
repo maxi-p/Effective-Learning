@@ -5,5 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface AlgorithmRepository extends JpaRepository<Algorithm, Long>
 {
-    public Algorithm findByNameAndDescription(String name, String description);
+    public Algorithm findByName(String name);
 }
