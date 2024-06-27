@@ -1,5 +1,11 @@
 package com.maxip.authenticationservice.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import com.maxip.authenticationservice.entity.User;
+import com.maxip.authenticationservice.entity.UserJwt;
+import com.maxip.authenticationservice.repository.UserRepo;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -9,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
@@ -26,12 +33,22 @@ public class JwtService
     @Autowired
     private UserDetailsService userDetailsService;
 
-    public String extractUsername(String token)
+    @Autowired
+    private UserRepo userRepository;
+
+    public String extractUsername(String token) throws JsonProcessingException
     {
-        return extractClaim(token, Claims::getSubject);
+        String subject = extractClaim(token, Claims::getSubject);
+        return new ObjectMapper().readTree(subject).get("username").asText();
     }
 
-    public boolean isTokenValid(String token)
+    public Long extractId(String token) throws JsonProcessingException
+    {
+        String subject = extractClaim(token, Claims::getSubject);
+        return new ObjectMapper().readTree(subject).get("id").asLong();
+    }
+
+    public boolean isTokenValid(String token) throws JsonProcessingException
     {
         final String username = extractUsername(token);
         if (username == null)
@@ -56,15 +73,28 @@ public class JwtService
         return extractClaim(token, Claims::getExpiration);
     }
 
-    public String generateToken(String username)
+    public String generateToken(String username) throws JsonProcessingException
     {
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);
         return generateToken(new HashMap<>(), userDetails);
     }
 
-    public String generateToken(Map<String, Object> claims, UserDetails userDetails)
+    public String generateToken(Map<String, Object> claims, UserDetails userDetails) throws JsonProcessingException
     {
-        return Jwts.builder().setClaims(claims).setSubject(userDetails.getUsername()).setIssuedAt(new Date(System.currentTimeMillis())).setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 24)).signWith(getSignInKey(), SignatureAlgorithm.HS256).compact();
+        String username = userDetails.getUsername();
+        String userId = userRepository.findByUsername(username).getId().toString();
+        UserJwt userJwt = new UserJwt(username, userId);
+
+        ObjectWriter ow = new ObjectMapper().writer();
+        String userJson = ow.writeValueAsString(userJwt);
+
+        return Jwts
+                .builder()
+                .setClaims(claims)
+                .setSubject(userJson).setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 24))
+                .signWith(getSignInKey(), SignatureAlgorithm.HS256)
+                .compact();
     }
 
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver)

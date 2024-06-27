@@ -20,4 +20,5 @@ public class Test
 
     @ManyToMany(fetch = FetchType.EAGER)
     private List<Question> questions;
+    private Integer numberOfQuestions;
 }

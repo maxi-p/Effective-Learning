@@ -4,7 +4,9 @@ import com.maxip.cloudgateway.service.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
+import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 @Component
 public class AuthenticationFilter extends AbstractGatewayFilterFactory<AuthenticationFilter.Config>
@@ -24,6 +26,7 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
     {
         return ((exchange, chain) ->
         {
+            ServerHttpRequest request = null;
             if (validator.isSecured.test(exchange.getRequest()))
             {
                 if (!exchange.getRequest().getHeaders().containsKey("Authorization"))
@@ -40,13 +43,18 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
                 try
                 {
                     jwtService.validateToken(token);
+                    request = exchange
+                            .getRequest()
+                            .mutate()
+                            .header("loggedId", jwtService.extractId(token).toString())
+                            .build();
                 }
                 catch (Exception e)
                 {
                     throw new RuntimeException("Unauthorized access to application", e);
                 }
             }
-            return chain.filter(exchange);
+            return chain.filter(exchange.mutate().request(request).build());
         });
     }
 

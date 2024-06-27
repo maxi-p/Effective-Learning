@@ -16,9 +16,9 @@ public class ResultController
     private ResultService resultService;
 
     @GetMapping
-    public ResponseEntity<List<Result>> getResults(@RequestParam Long userId)
+    public ResponseEntity<List<Result>> getResults(@RequestHeader("loggedId") String userId)
     {
-        List<Result> results = resultService.getResults(userId);
+        List<Result> results = resultService.getResults(Long.parseLong(userId));
         return ResponseEntity.ok(results);
     }
 
@@ -30,9 +30,9 @@ public class ResultController
     }
 
     @PostMapping
-    public ResponseEntity<Result> createResult(@RequestBody Result result)
+    public ResponseEntity<Result> createResult(@RequestBody Result result, @RequestHeader("loggedId") String id)
     {
-        Result createdResult = resultService.createResult(result);
+        Result createdResult = resultService.createResult(result, Long.parseLong(id));
         return ResponseEntity.ok(createdResult);
     }
 }

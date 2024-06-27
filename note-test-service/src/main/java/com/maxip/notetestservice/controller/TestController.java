@@ -18,9 +18,9 @@ public class TestController
     private TestService testService;
 
     @GetMapping
-    public ResponseEntity<List<Test>> readTests()
+    public ResponseEntity<List<Test>> readTests(@RequestHeader("loggedId") String id)
     {
-        List<Test> test = testService.getTests();
+        List<Test> test = testService.getTests(Long.parseLong(id));
         return ResponseEntity.ok(test);
     }
 
@@ -32,9 +32,10 @@ public class TestController
     }
 
     @PostMapping("/order-test")
-    public ResponseEntity<Test> createTest(@RequestBody TestOrder order)
+    public ResponseEntity<Test> createTest(@RequestBody TestOrder order, @RequestHeader("loggedId") String id)
     {
-        Test test = testService.createTest(order);
+        System.out.println(id);
+        Test test = testService.createTest(order, Long.parseLong(id));
         return ResponseEntity.ok(test);
     }
 }

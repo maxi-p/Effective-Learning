@@ -1,5 +1,6 @@
 package com.maxip.authenticationservice.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.maxip.authenticationservice.entity.User;
 import com.maxip.authenticationservice.repository.UserRepo;
 import com.maxip.authenticationservice.security.AuthenticationResponse;
@@ -8,6 +9,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -27,7 +29,7 @@ public class UserService
     @Autowired
     private AuthenticationManager authenticationManager;
 
-    public AuthenticationResponse register(User user)
+    public AuthenticationResponse register(User user) throws JsonProcessingException
     {
         user.getRoles().forEach(role ->
         {
@@ -49,7 +51,7 @@ public class UserService
         return new AuthenticationResponse(token);
     }
 
-    public AuthenticationResponse authenticate(User user)
+    public AuthenticationResponse authenticate(User user) throws JsonProcessingException
     {
         Authentication auth = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
@@ -67,7 +69,7 @@ public class UserService
         return new AuthenticationResponse(jwtToken);
     }
 
-    public boolean validateToken(String token)
+    public boolean validateToken(String token) throws JsonProcessingException
     {
         return jwtService.isTokenValid(token);
     }

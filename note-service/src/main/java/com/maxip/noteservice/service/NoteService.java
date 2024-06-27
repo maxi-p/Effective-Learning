@@ -32,8 +32,9 @@ public class NoteService
         return noteRepo.findById(noteId).orElseThrow(() -> new NoSuchElementException("Note not found"));
     }
 
-    public Note createNote(Note note)
+    public Note createNote(Note note, String id)
     {
+        note.setUserId(Long.parseLong(id));
         if (note.getNoteCategory().getId() == null)
         {
             NoteCategory noteCategory = categoryRepo.save(note.getNoteCategory());

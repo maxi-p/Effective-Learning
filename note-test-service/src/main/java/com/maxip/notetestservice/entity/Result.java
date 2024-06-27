@@ -19,5 +19,9 @@ public class Result
     @GeneratedValue
     private Long id;
     private Long userId;
+    private String testName;
     private String encodedResult;
+    private Integer questionNumber;
+    private Integer correctQuestionNumber;
+    private Long testId;
 }

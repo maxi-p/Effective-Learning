@@ -17,9 +17,9 @@ public class NoteController
     private NoteService noteService;
 
     @GetMapping
-    public ResponseEntity<List<Note>> readNotesOfUser(@RequestParam Long userId)
+    public ResponseEntity<List<Note>> readNotesOfUser(@RequestHeader("loggedId") String id)
     {
-        List<Note> notes = noteService.getAllNotesOfUser(userId);
+        List<Note> notes = noteService.getAllNotesOfUser(Long.parseLong(id));
         return ResponseEntity.ok(notes);
     }
 
@@ -31,9 +31,9 @@ public class NoteController
     }
 
     @PostMapping
-    public ResponseEntity<Note> createNote(@RequestBody Note note)
+    public ResponseEntity<Note> createNote(@RequestBody Note note, @RequestHeader("loggedId") String id)
     {
-        Note createdNote = noteService.createNote(note);
+        Note createdNote = noteService.createNote(note, id);
         return ResponseEntity.ok(createdNote);
     }
 
@@ -52,9 +52,9 @@ public class NoteController
     }
 
     @PostMapping("/rpc")
-    public ResponseEntity<Note[]> readNotesOfCategories(@RequestParam Long userId, @RequestBody List<Long> categoryIds)
+    public ResponseEntity<Note[]> readNotesOfCategories(@RequestParam Long id, @RequestBody List<Long> categoryIds)
     {
-        Note[] notes = noteService.getAllNotesOfCategoryOfUser(userId, categoryIds);
+        Note[] notes = noteService.getAllNotesOfCategoryOfUser(id, categoryIds);
         return ResponseEntity.ok(notes);
     }
 }
