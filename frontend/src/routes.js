@@ -10,9 +10,13 @@ const Train     = React.lazy(() => import('./views/training/tests/Tests'))
 const Tests     = React.lazy(() => import('./views/training/train/Train'))
 const Dashboard = React.lazy(() => import('./views/training/dashboard/Dashboard'))
 const Generate  = React.lazy(() => import('./views/training/generate/Generate'))
+const Subjects  = React.lazy(() => import('./views/subjects/Subjects'))
+const Subject   = React.lazy(() => import('./views/subjects/Subject'))
 
 const routes = [
   { path: '/', exact: true, name: 'Home' },
+  { path: '/subjects', name: 'Subjects', element: Subjects },
+  { path: '/subjects/:id', name: 'Subject', element: Subject },
   { path: '/notes/dictionary', name: 'Notes', element: Dictionary },
   { path: '/notes/categories', name: 'Categories', element: Categories },
   { path: '/notes/add', name: 'AddNote', element: AddNote },

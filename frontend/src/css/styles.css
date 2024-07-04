@@ -2,3 +2,23 @@
     text-align: left;
     display: block;
 }
+
+a {
+    text-decoration: none;
+}
+
+.nonRoundButton {
+    border-radius: 0;
+    text-align: left;
+    margin: none;
+    padding: none
+}
+
+.tightIcon {
+    margin-left: -5px;
+}
+
+.wideIcon {
+    margin-left: 5px;
+    margin-right: 5px;
+}
