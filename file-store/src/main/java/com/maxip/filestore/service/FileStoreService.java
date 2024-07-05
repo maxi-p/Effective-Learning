@@ -1,9 +1,7 @@
 package com.maxip.filestore.service;
 
 import com.maxip.filestore.config.AmazonConfig;
-import com.maxip.filestore.entity.File;
-import com.maxip.filestore.entity.Subject;
-import com.maxip.filestore.entity.SubjectModule;
+import com.maxip.filestore.entity.*;
 import com.maxip.filestore.repository.FileRepo;
 import com.maxip.filestore.repository.SubjectModuleRepo;
 import com.maxip.filestore.repository.SubjectRepo;
@@ -29,14 +27,14 @@ public class FileStoreService
     @Autowired
     private FileRepo fileRepo;
 
-    public void uploadFile(String userId, String subject, String module, MultipartFile file)
+    public void uploadFile(String userId, String subject, String alias, String module, MultipartFile file)
     {
         isFileEmpty(file);
 //        isRightMimeType(file);
         Map<String, String> metadata = getMetaData(file);
 
         String bucket = amazonConfig.BUCKET_NAME;
-        saveFile(Long.parseLong(userId), subject, module, file.getOriginalFilename());
+        saveFile(Long.parseLong(userId), subject, alias, module, file.getOriginalFilename());
         String filepath = String.format("%s/%s/%s/%s", userId, subject, module, file.getOriginalFilename());
 
         try
@@ -49,12 +47,62 @@ public class FileStoreService
         }
     }
 
-    public byte[] downloadFile(String filename)
+    public byte[] download(String loggedId, String subjectId, String moduleId, String filename)
     {
-        String filepath = String.format("%s/%s", 1, filename);
+        String bucket = amazonConfig.BUCKET_NAME;
+        Long userId = Long.parseLong(loggedId);
+        Subject subject = subjectRepo.findById(Long.parseLong(subjectId)).orElseThrow(() -> new IllegalStateException("No such subject found"));
+        if (!subject.getUserId().equals(userId))
+        {
+            throw new IllegalStateException("User is not owner of this subject");
+        }
+        SubjectModule module = subjectModuleRepo.findById(Long.parseLong(moduleId)).orElseThrow(() -> new IllegalStateException("No such module found"));
+        File file = fileRepo.findByNameAndSubjectModule(filename, module);
+        if (file == null)
+        {
+            throw new IllegalStateException("No such file found");
+        }
+        String filepath = String.format("%s/%s/%s/%s", userId, subject.getName(), module.getName(), filename);
+        return fileStore.download(bucket, filepath);
+    }
+    public byte[] downloadFile(String userId, String fileId)
+    {
+        File file = fileRepo.findById(Long.parseLong(fileId)).orElseThrow(() -> new IllegalStateException("File not found"));
+        SubjectModule subjectModule = file.getSubjectModule();
+        Subject subject = subjectModule.getSubject();
+        String filepath = String.format("%s/%s/%s/%s", userId, subject.getName(), subjectModule.getName(), file.getName());
         String bucket = amazonConfig.BUCKET_NAME;
 
         return fileStore.download(bucket, filepath);
+    }
+
+    public List<Subject> getAllSubjects(String id)
+    {
+        return subjectRepo.findAllByUserId(Long.parseLong(id));
+    }
+
+    public List<ModuleResponse> getAllModules(String userId, String subjectId)
+    {
+        Subject subject = subjectRepo.findById(Long.parseLong(subjectId)).orElseThrow(() -> new IllegalStateException("Subject not found"));
+        if (!subject.getUserId().equals(Long.parseLong(userId)))
+        {
+            throw new IllegalStateException("User does not have access to this subject data");
+        }
+        List<SubjectModule> modules = subjectModuleRepo.findAllBySubject(subject);
+        List<ModuleResponse> moduleResponses = new ArrayList<>();
+
+        for (SubjectModule module : modules)
+        {
+            ModuleResponse moduleResponse = new ModuleResponse();
+            List<File> files = fileRepo.findAllBySubjectModule(module);
+
+            moduleResponse.setId(module.getId());
+            moduleResponse.setName(module.getName());
+            moduleResponse.setFiles(files);
+            moduleResponses.add(moduleResponse);
+        }
+
+        return moduleResponses;
     }
 
     private static Map<String, String> getMetaData(MultipartFile file)
@@ -82,7 +130,7 @@ public class FileStoreService
         }
     }
 
-    private void saveFile(Long userId, String subjectName, String moduleName, String fileName)
+    private void saveFile(Long userId, String subjectName, String subjectAlias, String moduleName, String fileName)
     {
         Subject subject = subjectRepo.findByNameAndUserId(subjectName, userId);
         if (subject == null)
@@ -90,6 +138,7 @@ public class FileStoreService
             subject = new Subject();
             subject.setUserId(userId);
             subject.setName(subjectName);
+            subject.setAlias(subjectAlias);
             subject = subjectRepo.save(subject);
         }
 

@@ -1,5 +1,6 @@
 package com.maxip.filestore.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 

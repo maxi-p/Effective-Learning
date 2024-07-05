@@ -15,60 +15,40 @@ import {
 
 const Subjects = props => {
   const [searchParams] = useSearchParams();
-  const [notes, setNotes] = useState([]);
+  const [subjects, setSubjects] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:8080/api/v1/note", {
+    fetch("http://localhost:8080/api/v1/file-store/subjects", {
       method: "GET",
       headers: {'Authorization':'Bearer '+props.token}, 
     })
     .then(res => res.json())
     .then(res => {
-      setNotes(res)
+        setSubjects(res)
     });
   },[]);
 
-  const notesList = notes.filter(note => {
-    return !searchParams.get('category') || note.noteCategory.name.toLowerCase().includes(searchParams.get('category').toLowerCase())
-  })
-
-  const res = notesList.map(note => {
-    return <CListGroup 
-              className="mb-2" 
-              layout={`horizontal`} 
-              key={note.id}>
-              <CListGroupItem>{note.key}</CListGroupItem>
-              <CListGroupItem>{note.value}</CListGroupItem>
-            </CListGroup>
+  const subjectList = subjects.map((subject, index) => {
+    return  <CTableRow key={index}>
+              <CTableHeaderCell scope="row">{index}</CTableHeaderCell>
+              <CTableDataCell colSpan={2}><a href={`/#/subjects/${subject.id}`}>{subject.name}</a></CTableDataCell>
+              <CTableDataCell>{subject.alias}</CTableDataCell>
+            </CTableRow>
   });
 
   return (
     <CTable small>
-    <CTableHead>
-      <CTableRow>
-        <CTableHeaderCell scope="col">#</CTableHeaderCell>
-        <CTableHeaderCell scope="col" colSpan={2}>Subject</CTableHeaderCell>
-        <CTableHeaderCell scope="col">Alias</CTableHeaderCell>
-      </CTableRow>
-    </CTableHead>
-    <CTableBody>
-      <CTableRow>
-        <CTableHeaderCell scope="row">1</CTableHeaderCell>
-        <CTableDataCell colSpan={2}><a href="/#/subjects/1">Algorithms and Data Structures 1</a></CTableDataCell>
-        <CTableDataCell>COP3502</CTableDataCell>
-      </CTableRow>
-      <CTableRow>
-        <CTableHeaderCell scope="row">2</CTableHeaderCell>
-        <CTableDataCell colSpan={2}><a href="/#/subjects/2">Algorithms and Data Structures 2</a></CTableDataCell>
-        <CTableDataCell>COP3503</CTableDataCell>
-      </CTableRow>
-      <CTableRow>
-        <CTableHeaderCell scope="row">3</CTableHeaderCell>
-        <CTableDataCell colSpan={2}><a href="/#/subjects/3">LeetCode Coding Problems</a></CTableDataCell>
-        <CTableDataCell>N/A</CTableDataCell>
-      </CTableRow>
-    </CTableBody>
-  </CTable>
+      <CTableHead>
+        <CTableRow>
+          <CTableHeaderCell scope="col">#</CTableHeaderCell>
+          <CTableHeaderCell scope="col" colSpan={2}>Subject</CTableHeaderCell>
+          <CTableHeaderCell scope="col">Alias</CTableHeaderCell>
+        </CTableRow>
+      </CTableHead>
+      <CTableBody>
+        {subjectList}
+      </CTableBody>
+    </CTable>
   )
 }
 

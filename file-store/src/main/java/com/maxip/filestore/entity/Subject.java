@@ -1,5 +1,6 @@
 package com.maxip.filestore.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -18,5 +19,7 @@ public class Subject
     @Column(name="name")
     private String name;
     @Column(name="userId")
+    @JsonIgnore
     private Long userId;
+    private String alias;
 }

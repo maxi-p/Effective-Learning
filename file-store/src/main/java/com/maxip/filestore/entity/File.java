@@ -1,5 +1,6 @@
 package com.maxip.filestore.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -18,5 +19,6 @@ public class File
     private String name;
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="subject_module_id")
+    @JsonIgnore
     private SubjectModule subjectModule;
 }
