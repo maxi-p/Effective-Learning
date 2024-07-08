@@ -22,3 +22,22 @@ a {
     margin-left: 5px;
     margin-right: 5px;
 }
+
+.areYouSurePopUp{
+    border-radius: 5px;
+    background-color: #313641;
+    /* border: 2px solid red; */
+    position: absolute; 
+    top: 50%; 
+    left: 50%;
+    transform: translate(-50%,-50%);
+}
+
+.cancelDelete{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+.fileNameDiv{
+    display: inline
+}

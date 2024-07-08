@@ -13,6 +13,14 @@ import {
   CTableBody,
   CListGroup,
   CListGroupItem,
+  CCard,
+  CCardHeader,
+  CCol,
+  CForm,
+  CFormInput,
+  CFormLabel,
+  CFormTextarea,
+  CRow,
 } from '@coreui/react'
 
 import {
@@ -20,6 +28,7 @@ import {
     cilCaretRight,
     cilNotes,
     cilPaperclip,
+    cilTrash,
   } from '@coreui/icons'
 
 const Subject = props => {
@@ -40,6 +49,7 @@ const Subject = props => {
     })
     .then(res => res.json())
     .then(res => {
+        console.log(res)
         setModules(res)
     });
   },[]);
@@ -54,6 +64,21 @@ const Subject = props => {
 
   const components = modules.map((module, index) => {
         return <div className="d-grid gap-2" key={index}>
+                    <CForm style={{textAlign:'center'}} className="row g-3 areYouSurePopUp">
+                      <span >Are you sure you want to delete it?</span>
+                      <div className='cancelDelete'>
+                        <div className="col-auto" style={{marginRight: '10px'}}>
+                          <CButton color="secondary" type="button" className="mb-3">
+                            Cancel
+                          </CButton>
+                        </div>
+                        <div className="col-auto">
+                          <CButton color="danger" type="button" className="mb-3">
+                            Delete
+                          </CButton>
+                        </div>
+                      </div>
+                    </CForm>
                     <CButton 
                         className="nonRoundButton" 
                         color="secondary"
@@ -70,7 +95,7 @@ const Subject = props => {
                         <CTableBody>
                             {module.files.map((file, index) => {
                                 return  <CTableRow key={index}>
-                                            <CTableDataCell colSpan={4}><CIcon icon={cilPaperclip} className="wideIcon"/> <a href={`/#/subjects/${id}/${module.id}/${file.name}`}>{file.name}</a></CTableDataCell>
+                                            <CTableDataCell colSpan={4}><div className="fileOptions"><div className="fileNameDiv"><CIcon icon={cilPaperclip} className="wideIcon"/> <a href={`/#/subjects/${id}/${module.id}/${file.name}?numPages=${file.numberOfPages}`}>{file.name}</a></div><button style={{float:"right",background: 'none',border: 'none'}}><CIcon icon={cilTrash} style={{color:"#db5d5d"}}className="wideIcon"/></button></div></CTableDataCell>
                                         </CTableRow>
                             })}
                         </CTableBody>

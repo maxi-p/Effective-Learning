@@ -4,6 +4,7 @@ import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.S3Object;
+import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.amazonaws.util.IOUtils;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -43,6 +44,20 @@ public class FileStore
         }
     }
 
+    public void clearFolder(String bucket, String filename)
+    {
+        try
+        {
+            for (S3ObjectSummary file : s3.listObjects(bucket, filename).getObjectSummaries()){
+                System.out.println(file.getKey());
+                s3.deleteObject(bucket, file.getKey());
+            }
+        } catch (AmazonServiceException e)
+        {
+            throw new IllegalStateException("Failed to save file to S3 " + bucket + filename, e);
+        }
+    }
+
     public byte[] download(String bucket, String key)
     {
         try
@@ -50,6 +65,18 @@ public class FileStore
             S3Object code = s3.getObject(bucket, key);
             return IOUtils.toByteArray(code.getObjectContent());
         } catch (AmazonServiceException | IOException e)
+        {
+            throw new IllegalStateException("Failed to download file from S3: " + bucket + key, e);
+        }
+    }
+
+    public InputStream downloadIS(String bucket, String key)
+    {
+        try
+        {
+            S3Object code = s3.getObject(bucket, key);
+            return code.getObjectContent();
+        } catch (AmazonServiceException e)
         {
             throw new IllegalStateException("Failed to download file from S3: " + bucket + key, e);
         }

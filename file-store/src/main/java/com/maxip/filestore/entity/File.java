@@ -21,4 +21,5 @@ public class File
     @JoinColumn(name="subject_module_id")
     @JsonIgnore
     private SubjectModule subjectModule;
+    private Integer numberOfPages;
 }
