@@ -14,8 +14,9 @@ import {
   cilSpeedometer,
   cilStar,
   cilPlus,
+  cilSearch,
 } from '@coreui/icons'
-import { CNavGroup, CNavItem, CNavTitle } from '@coreui/react'
+import { CDropdown, CNavGroup, CNavItem, CNavTitle } from '@coreui/react'
 
 const _nav = [
   {
@@ -27,6 +28,12 @@ const _nav = [
     name: 'Subjects',
     to: 'subjects',
     icon: <CIcon icon={cilNotes} customClassName="nav-icon" />,
+  },
+  {
+    component: CNavItem,
+    name: 'Search',
+    to: 'search',
+    icon: <CIcon icon={cilSearch} customClassName="nav-icon" />,
   },
 ]
 

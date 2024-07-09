@@ -1,26 +1,15 @@
 import { useState, useEffect } from 'react'
 import { useParams, useSearchParams } from 'react-router-dom'
 import React from 'react'
+import Draggable from 'react-draggable';
 import CIcon from '@coreui/icons-react'
 import {
     CTable,
     CButton,
-  CCardBody,
-  CTableHead,
   CTableRow,
-  CTableHeaderCell,
   CTableDataCell,
   CTableBody,
-  CListGroup,
-  CListGroupItem,
-  CCard,
-  CCardHeader,
-  CCol,
   CForm,
-  CFormInput,
-  CFormLabel,
-  CFormTextarea,
-  CRow,
 } from '@coreui/react'
 
 import {
@@ -35,6 +24,8 @@ const Subject = props => {
 
   const [isVisible, setIsVisible] = useState([]);
   const [modules, setModules] = useState([]);
+  const [remove, setRemove] = useState(false);
+  const [toRemove, setToRemove] = useState({subjectId:'', moduleId:'', filename:''})
 
   const {id} = useParams();
 
@@ -49,7 +40,6 @@ const Subject = props => {
     })
     .then(res => res.json())
     .then(res => {
-        console.log(res)
         setModules(res)
     });
   },[]);
@@ -62,23 +52,19 @@ const Subject = props => {
     setIsVisible(bools)
   },[modules]);
 
+  const handleDelete = event => {
+    console.log(event.target.value);
+    setToRemove({subjectId: id, moduleId: modules[moduleIndex].id, filename: modules[moduleIndex][fileIndex].name})
+    setRemove(true);
+  }
+
+  const handleCancel = event => {
+    setToRemove({subjectId:'', moduleId:'', filename:''});
+    setRemove(false);
+  }
+
   const components = modules.map((module, index) => {
         return <div className="d-grid gap-2" key={index}>
-                    <CForm style={{textAlign:'center'}} className="row g-3 areYouSurePopUp">
-                      <span >Are you sure you want to delete it?</span>
-                      <div className='cancelDelete'>
-                        <div className="col-auto" style={{marginRight: '10px'}}>
-                          <CButton color="secondary" type="button" className="mb-3">
-                            Cancel
-                          </CButton>
-                        </div>
-                        <div className="col-auto">
-                          <CButton color="danger" type="button" className="mb-3">
-                            Delete
-                          </CButton>
-                        </div>
-                      </div>
-                    </CForm>
                     <CButton 
                         className="nonRoundButton" 
                         color="secondary"
@@ -93,9 +79,23 @@ const Subject = props => {
                     </CButton>
                     {isVisible[index] && <CTable small>
                         <CTableBody>
-                            {module.files.map((file, index) => {
-                                return  <CTableRow key={index}>
-                                            <CTableDataCell colSpan={4}><div className="fileOptions"><div className="fileNameDiv"><CIcon icon={cilPaperclip} className="wideIcon"/> <a href={`/#/subjects/${id}/${module.id}/${file.name}?numPages=${file.numberOfPages}`}>{file.name}</a></div><button style={{float:"right",background: 'none',border: 'none'}}><CIcon icon={cilTrash} style={{color:"#db5d5d"}}className="wideIcon"/></button></div></CTableDataCell>
+                            {module.files.map((file, indx) => {
+                                return  <CTableRow key={indx}>
+                                            <CTableDataCell colSpan={4}>
+                                                <div className="fileOptions">
+                                                    <div className="fileNameDiv">
+                                                        <CIcon icon={cilPaperclip} className="wideIcon"/> 
+                                                        <a href={`/#/subjects/${id}/${module.id}/${file.name}?numPages=${file.numberOfPages}`}>{file.name}</a>
+                                                    </div>
+                                                    <button 
+                                                        name={indx} 
+                                                        value={index} 
+                                                        style={{float:"right",background: 'none',border: 'none'}} 
+                                                        onClick={handleDelete}>
+                                                        <CIcon icon={cilTrash} style={{color:"#db5d5d"}}className="wideIcon"/>
+                                                    </button>
+                                                </div>
+                                            </CTableDataCell>
                                         </CTableRow>
                             })}
                         </CTableBody>
@@ -105,6 +105,23 @@ const Subject = props => {
 
   return (
     <div className="d-grid gap-2">
+        {remove && <Draggable>
+            <div style={{textAlign:'center'}} className="row g-3 areYouSurePopUp">
+              <span >Are you sure you want to delete it?</span>
+              <div className='cancelDelete'>
+                <div className="col-auto" style={{marginRight: '10px'}}>
+                  <CButton color="secondary" type="button" className="mb-3" onClick={handleCancel}>
+                    Cancel
+                  </CButton>
+                </div>
+                <div className="col-auto">
+                  <CButton color="danger" type="button" className="mb-3">
+                    Delete
+                  </CButton>
+                </div>
+              </div>
+            </div>
+        </Draggable>}
         {components}
     </div>
   )

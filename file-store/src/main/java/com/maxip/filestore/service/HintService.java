@@ -6,6 +6,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -21,6 +22,31 @@ public class HintService
     private HintFileRepo hintFileRepo;
     @Autowired
     private SearchHintRepo searchHintRepo;
+
+    public List<FileResponse> getFiles(String hintName, String loggedId)
+    {
+        Long userId = Long.parseLong(loggedId);
+        SearchHint hint = searchHintRepo.findByValue(hintName);
+        List<HintFile> hintFiles = hintFileRepo.findAllBySearchHint(hint);
+        List<FileResponse> files = new ArrayList<>();
+        for (HintFile hintFile : hintFiles)
+        {
+            File file = hintFile.getFile();
+            SubjectModule module = file.getSubjectModule();
+            Subject subject = module.getSubject();
+            if (!subject.getUserId().equals(userId))
+                continue;
+            FileResponse fileResponse = new FileResponse();
+            fileResponse.setId(file.getId());
+            fileResponse.setName(file.getName());
+            fileResponse.setNumberOfPages(file.getNumberOfPages());
+            fileResponse.setResultPage(hintFile.getPageNumber());
+            fileResponse.setModuleId(module.getId());
+            fileResponse.setSubjectId(subject.getId());
+            files.add(fileResponse);
+        }
+        return files;
+    }
 
     @Transactional
     public void addHints(HintRequest hintRequest, String loggedId)

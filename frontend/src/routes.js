@@ -5,7 +5,7 @@ const Dictionary = React.lazy(() => import('./views/notes/dictionary/Dictionary'
 const Categories = React.lazy(() => import('./views/notes/categories/Categories'))
 const AddNote    = React.lazy(() => import('./views/notes/add-note/AddNote'))
 
-//Train
+// Train
 const Train     = React.lazy(() => import('./views/training/tests/Tests'))
 const Tests     = React.lazy(() => import('./views/training/train/Train'))
 const Dashboard = React.lazy(() => import('./views/training/dashboard/Dashboard'))
@@ -14,11 +14,13 @@ const Generate  = React.lazy(() => import('./views/training/generate/Generate'))
 // File
 const Subjects  = React.lazy(() => import('./views/subjects/Subjects'))
 const Subject   = React.lazy(() => import('./views/subjects/Subject'))
-const UserFile      = React.lazy(() => import('./views/subjects/UserFile'))
+const Search    = React.lazy(() => import('./views/subjects/Search'))
+const UserFile  = React.lazy(() => import('./views/subjects/UserFile'))
 
 const routes = [
   { path: '/', exact: true, name: 'Home' },
   { path: '/subjects', name: 'Subjects', element: Subjects },
+  { path: '/search', name: 'Search', element: Search },
   { path: '/subjects/:id', name: 'Subject', element: Subject },
   { path: '/subjects/:subjectId/:moduleId/:filename', name: 'File', element: UserFile },
   { path: '/notes/dictionary', name: 'Notes', element: Dictionary },

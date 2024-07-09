@@ -10,15 +10,17 @@ import {
 } from '@coreui/react'
 
 const UserFile = props => {
-    const [page, setPage] = useState(1);
+    const [searchParams] = useSearchParams();
+    const numPages = searchParams.get("numPages");
+    const resultPage = searchParams.get("resultPage");
+
+    const [page, setPage] = useState(resultPage?Number(resultPage):1);
     const [ready, setReady] = useState(false);
     const [imageUrls, setImageUrls] = useState([]);
-    const [searchParams] = useSearchParams();
     const [inpt, setInput] = useState('');
     const [toBeAdded, setToBeAdded] = useState([]);
     const [add, setAdd] = useState(false);
 
-    const numPages = searchParams.get("numPages");
 
     const {subjectId} = useParams();
     const {moduleId} = useParams();
@@ -32,16 +34,30 @@ const UserFile = props => {
         arr.push("")
       }
       setImageUrls(arr);
+      const firstPage = resultPage?Number(resultPage)-1:0;
+
+      // Loadign first Page
+      fetch(`http://localhost:8080/api/v1/file-store/images/${subjectId}/${moduleId}/${nameWithoutExtension}_page-${firstPage}.jpg`, {
+        method: "GET",
+        headers: {'Authorization':'Bearer '+props.token}, 
+      })
+      .then((response) => response.blob())
+      .then((blob) => URL.createObjectURL(blob))
+      .then((url) => {setImageUrls(prev=>prev.map((item, index) => index == firstPage ? url : item))})
+      .then(() => {setReady(true)})
+
       for (let i=0; i<numPages; i++ )
       {
-        fetch(`http://localhost:8080/api/v1/file-store/images/${subjectId}/${moduleId}/${nameWithoutExtension}_page-${i}.jpg`, {
-          method: "GET",
-          headers: {'Authorization':'Bearer '+props.token}, 
-        })
-        .then((response) => response.blob())
-        .then((blob) => URL.createObjectURL(blob))
-        .then((url) => {setImageUrls(prev=>prev.map((item, index) => index == i ? url : item))})
-        .then(() => {if(i == 0) setReady(true)})
+        if (i!=firstPage)
+        {
+          fetch(`http://localhost:8080/api/v1/file-store/images/${subjectId}/${moduleId}/${nameWithoutExtension}_page-${i}.jpg`, {
+            method: "GET",
+            headers: {'Authorization':'Bearer '+props.token}, 
+          })
+          .then((response) => response.blob())
+          .then((blob) => URL.createObjectURL(blob))
+          .then((url) => {setImageUrls(prev=>prev.map((item, index) => index == i ? url : item))})
+        }
       }  
     }, []);
 
