@@ -26,7 +26,7 @@ public class HintService
     public List<FileResponse> getFiles(String hintName, String loggedId)
     {
         Long userId = Long.parseLong(loggedId);
-        SearchHint hint = searchHintRepo.findByValue(hintName);
+        SearchHint hint = searchHintRepo.findByValue(hintName.toLowerCase());
         List<HintFile> hintFiles = hintFileRepo.findAllBySearchHint(hint);
         List<FileResponse> files = new ArrayList<>();
         for (HintFile hintFile : hintFiles)
@@ -65,17 +65,16 @@ public class HintService
         if (!module.getSubject().getId().equals(subjectId))
             throw new IllegalStateException("This module is not part of given subject");
 
-        System.out.println(filename);
         File file = fileRepo.findByNameAndSubjectModule(filename, module);
         if (file == null) throw new IllegalStateException("No such file found");
 
         for (String hintValue : hints)
         {
-            SearchHint searchHint = searchHintRepo.findByValue(hintValue);
+            SearchHint searchHint = searchHintRepo.findByValue(hintValue.toLowerCase());
             if (searchHint == null)
             {
                 searchHint = new SearchHint();
-                searchHint.setValue(hintValue);
+                searchHint.setValue(hintValue.toLowerCase());
                 searchHint = searchHintRepo.save(searchHint);
             }
 
