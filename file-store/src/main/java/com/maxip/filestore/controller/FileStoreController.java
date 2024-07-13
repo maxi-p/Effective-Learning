@@ -32,33 +32,14 @@ public class FileStoreController
         fileStoreService.uploadFile(id, subject, strAlias, module, file);
     }
 
-    @GetMapping(path = "/images/{subjectId}/{moduleId}/{filename}")
-    public ResponseEntity<Resource> downloadImages(@PathVariable("subjectId") String subjectId, @PathVariable("moduleId") String moduleId, @PathVariable("filename") String filename, @RequestHeader("loggedId") String loggedId) throws IOException
-    {
-        byte[] image = fileStoreService.download(loggedId, subjectId, moduleId, filename);
-        ByteArrayResource resource = new ByteArrayResource(image);
-        String contentType = "image/jpeg";
-
-        return ResponseEntity.ok()
-                .header("Content-Type", contentType)
-                .contentLength(resource.contentLength())
-                .header(HttpHeaders.CONTENT_DISPOSITION,
-                        ContentDisposition.attachment()
-                                .filename(filename)
-                                .build().toString())
-                .body(resource);
-    }
-
     @GetMapping(path = "/file/{subjectId}/{moduleId}/{filename}")
     public ResponseEntity<Resource> download(@PathVariable("subjectId") String subjectId, @PathVariable("moduleId") String moduleId, @PathVariable("filename") String filename, @RequestHeader("loggedId") String loggedId) throws IOException
     {
         byte[] array = fileStoreService.download(loggedId, subjectId, moduleId, filename);
 
         ByteArrayResource resource = new ByteArrayResource(array);
-        String contentType = "application/pdf";
         System.out.println("Getting pdf name: " + filename);
         return ResponseEntity.ok()
-                .header("Content-Type", contentType)
                 .contentLength(resource.contentLength())
                 .header(HttpHeaders.CONTENT_DISPOSITION,
                         ContentDisposition.attachment()

@@ -15,14 +15,14 @@ const Generate  = React.lazy(() => import('./views/training/generate/Generate'))
 const Subjects  = React.lazy(() => import('./views/subjects/Subjects'))
 const Subject   = React.lazy(() => import('./views/subjects/Subject'))
 const Search    = React.lazy(() => import('./views/subjects/Search'))
-const UserFile  = React.lazy(() => import('./views/subjects/UserFile'))
+const File      = React.lazy(() => import('./views/subjects/File'))
 
 const routes = [
   { path: '/', exact: true, name: 'Home' },
   { path: '/subjects', name: 'Subjects', element: Subjects },
   { path: '/search', name: 'Search', element: Search },
   { path: '/subjects/:id', name: 'Subject', element: Subject },
-  { path: '/subjects/:subjectId/:moduleId/:filename', name: 'File', element: UserFile },
+  { path: '/subjects/:subjectId/:moduleId/:filename', name: 'File', element: File },
   { path: '/notes/dictionary', name: 'Notes', element: Dictionary },
   { path: '/notes/categories', name: 'Categories', element: Categories },
   { path: '/notes/add', name: 'AddNote', element: AddNote },

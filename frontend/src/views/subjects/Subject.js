@@ -6,10 +6,9 @@ import CIcon from '@coreui/icons-react'
 import {
     CTable,
     CButton,
-  CTableRow,
-  CTableDataCell,
-  CTableBody,
-  CForm,
+    CTableRow,
+    CTableDataCell,
+    CTableBody,
 } from '@coreui/react'
 
 import {
@@ -34,15 +33,16 @@ const Subject = props => {
   }
 
   useEffect(() => {
-    fetch(`http://localhost:8080/api/v1/file-store/subjects/${id}`, {
-      method: "GET",
-      headers: {'Authorization':'Bearer '+props.token}, 
-    })
-    .then(res => res.json())
-    .then(res => {
+      fetch(`http://localhost:8080/api/v1/file-store/subjects/${id}`, {
+        method: "GET",
+        headers: {'Authorization':`Bearer ${props.token}`}, 
+      })
+      .then(res => res.json())
+      .then(res => {
         setModules(res)
-    });
-  },[]);
+        props.setRefresh(false)
+      });
+  },[props.refresh]);
 
   useEffect(() => {
     var bools = []
@@ -52,15 +52,27 @@ const Subject = props => {
     setIsVisible(bools)
   },[modules]);
 
-  const handleDelete = event => {
-    console.log(event.target.value);
-    setToRemove({subjectId: id, moduleId: modules[moduleIndex].id, filename: modules[moduleIndex][fileIndex].name})
+  const handleDelete = ({subjectId, moduleId, filename}) => {
+    setToRemove({subjectId: subjectId, moduleId: moduleId, filename: filename})
     setRemove(true);
   }
 
   const handleCancel = event => {
     setToRemove({subjectId:'', moduleId:'', filename:''});
     setRemove(false);
+  }
+
+  const deleteFile = () => {
+    fetch(`http://localhost:8080/api/v1/file-store/file/${toRemove.subjectId}/${toRemove.moduleId}/${toRemove.filename}`, {
+      method: "DELETE",
+      headers: {'Authorization':`Bearer ${props.token}`}, 
+    })
+    .then(res => console.log(res.json()))
+    .then(() => {
+      props.setRefresh(true)
+      setToRemove({subjectId:'', moduleId:'', filename:''});
+      setRemove(false);
+    });
   }
 
   const components = modules.map((module, index) => {
@@ -85,13 +97,12 @@ const Subject = props => {
                                                 <div className="fileOptions">
                                                     <div className="fileNameDiv">
                                                         <CIcon icon={cilPaperclip} className="wideIcon"/> 
-                                                        <a href={`/#/subjects/${id}/${module.id}/${file.name}?numPages=${file.numberOfPages}`}>{file.name}</a>
+                                                        <a href={`/#/subjects/${id}/${module.id}/${file.name}`}>{file.name}</a>
                                                     </div>
                                                     <button 
-                                                        name={indx} 
-                                                        value={index} 
+                                                        onClick={() => handleDelete({subjectId: id, moduleId: module.id, filename: file.name})}
                                                         style={{float:"right",background: 'none',border: 'none'}} 
-                                                        onClick={handleDelete}>
+                                                    >
                                                         <CIcon icon={cilTrash} style={{color:"#db5d5d"}}className="wideIcon"/>
                                                     </button>
                                                 </div>
@@ -107,15 +118,25 @@ const Subject = props => {
     <div className="d-grid gap-2">
         {remove && <Draggable>
             <div style={{textAlign:'center'}} className="row g-3 areYouSurePopUp">
-              <span >Are you sure you want to delete it?</span>
+              <span >Are you sure you want to delete {toRemove.filename}?</span>
               <div className='cancelDelete'>
                 <div className="col-auto" style={{marginRight: '10px'}}>
-                  <CButton color="secondary" type="button" className="mb-3" onClick={handleCancel}>
+                  <CButton 
+                    color="secondary" 
+                    type="button" 
+                    className="mb-3" 
+                    onClick={handleCancel}
+                  >
                     Cancel
                   </CButton>
                 </div>
                 <div className="col-auto">
-                  <CButton color="danger" type="button" className="mb-3">
+                  <CButton 
+                    color="danger" 
+                    type="button" 
+                    className="mb-3"
+                    onClick={deleteFile}
+                  >
                     Delete
                   </CButton>
                 </div>

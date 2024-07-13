@@ -19,8 +19,7 @@ const UserFile = props => {
     const [imageUrls, setImageUrls] = useState([]);
     const [inpt, setInput] = useState('');
     const [toBeAdded, setToBeAdded] = useState([]);
-    const [add, setAdd] = useState(false);
-
+    const [add, setAdd] = useState(true);
 
     const {subjectId} = useParams();
     const {moduleId} = useParams();
@@ -41,10 +40,16 @@ const UserFile = props => {
         method: "GET",
         headers: {'Authorization':'Bearer '+props.token}, 
       })
+      .then(res => {
+        if(res.status !=200) 
+          alert(res.status)
+        return res;
+      })
       .then((response) => response.blob())
       .then((blob) => URL.createObjectURL(blob))
       .then((url) => {setImageUrls(prev=>prev.map((item, index) => index == firstPage ? url : item))})
       .then(() => {setReady(true)})
+      .catch(err => window.alert(err))
 
       for (let i=0; i<numPages; i++ )
       {
@@ -54,12 +59,32 @@ const UserFile = props => {
             method: "GET",
             headers: {'Authorization':'Bearer '+props.token}, 
           })
+          .then(res => {
+            if(res.status !=200) 
+              alert(res.status)
+            return res;
+          })
           .then((response) => response.blob())
           .then((blob) => URL.createObjectURL(blob))
           .then((url) => {setImageUrls(prev=>prev.map((item, index) => index == i ? url : item))})
+          .catch(err => window.alert(err))
         }
       }  
     }, []);
+
+    useEffect(() =>{
+      const keyDownHandler = e => {
+        if (e.key === 'ArrowRight')
+          incrementPage();
+        if (e.key === 'ArrowLeft')
+          decrementPage();
+      }
+
+      document.addEventListener("keydown", keyDownHandler);
+      return () => {
+        document.removeEventListener("keydown", keyDownHandler);
+      };
+    },[]);
 
     const handleSubmit = event => {
       console.log(filename)
@@ -79,18 +104,32 @@ const UserFile = props => {
         body: JSON.stringify(data)
       })
       .then(res => {
-        console.log(res)
+        if(res.status !=200) 
+          alert(res.status)
+        return res;
       })
+      .catch(err => window.alert(err))
 
-      setAdd(false);
       setToBeAdded([]);
     }
 
+    const incrementPage = () => {
+      setPage(prev => prev==numPages? 1 :(prev+1)%(numPages+1))
+    }
+
+    const decrementPage = () => {
+      setPage(prev => prev==1? Number(numPages): (prev-1)%(numPages+1))
+    }
+
     const handleSlide = event => {
-      setPage(prev => event.target.name === 'next'? prev==numPages? 1: (prev+1)%(numPages+1): prev===1? Number(numPages): (prev-1)%(numPages+1))
+      if (event.target.name === 'next')
+        incrementPage();
+      else
+        decrementPage();
     }
 
     const handleKey = event => {
+      console.log(event.code)
       if (event.code === 'Enter' && inpt !== '')
       {
         setToBeAdded(prev => [
@@ -101,6 +140,8 @@ const UserFile = props => {
     }
     
     const handleAdd = event => {
+      if (event.target.name === "cancel")
+        setToBeAdded([])
       setAdd(prev => !prev)
     }
 
@@ -114,7 +155,7 @@ const UserFile = props => {
     return (
         <div>
           {ready && (
-          <div style={{width:'800px'}}>
+          <div style={{width:'1200px'}}>
             {add && <Draggable>
               <div style={{textAlign:'center', width:'500px'}} className="row g-3 areYouSurePopUp">
                 <CFormInput
@@ -131,7 +172,7 @@ const UserFile = props => {
                 </div>
                 <div className='cancelDelete'>
                   <div className="col-auto" style={{marginRight: '10px'}}>
-                    <CButton color="secondary" type="button" className="mb-3" onClick={handleAdd}>
+                    <CButton color="secondary" name="cancel" type="button" className="mb-3" onClick={handleAdd}>
                       Cancel
                     </CButton>
                   </div>
@@ -146,7 +187,7 @@ const UserFile = props => {
             <button name="prev" onClick={handleSlide}>Prev</button>
             <button name="next" onClick={handleSlide}>Next</button>
             <span>  {page}/{numPages}</span>
-            <button onClick={handleAdd} style={{float:"right"}}>Add</button>
+            <button onClick={(handleAdd)} name="add" style={{float:"right"}}>Add</button>
             <br/>
               {imageUrls.map((imageUrl, index) => (
                 <img key={index} style={index===(page-1)?{display: 'block',width:'100%'}:{display: 'none'}} src={imageUrl} alt={`Slide ${index+1}`} />

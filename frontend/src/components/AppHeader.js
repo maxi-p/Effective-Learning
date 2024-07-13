@@ -13,6 +13,7 @@ import {
   CNavLink,
   CNavItem,
   useColorModes,
+  CButton,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import {
@@ -23,23 +24,14 @@ import {
   cilList,
   cilMenu,
   cilMoon,
+  cilNoteAdd,
+  cilPlus,
   cilSun,
 } from '@coreui/icons'
-import {
-  CBreadcrumb,
-  CBreadcrumbItem,
-  CCard,
-  CCardBody,
-  CCardHeader,
-  CCol,
-  CRow,
-  CLink,
-} from '@coreui/react'
 
-import { AppBreadcrumb } from './index'
 import { AppHeaderDropdown } from './header/index'
 
-const AppHeader = () => {
+const AppHeader = props => {
   const headerRef = useRef()
   const { colorMode, setColorMode } = useColorModes('coreui-free-react-admin-template-theme')
 
@@ -53,6 +45,10 @@ const AppHeader = () => {
     })
   }, [])
 
+  const toggleAddMenu = () => {
+    props.setIsAddFileMenu(prev => !prev)
+  }
+
   return (
     <CHeader position="sticky" className="mb-4 p-0" ref={headerRef}>
       <CContainer className="border-bottom px-4" fluid>
@@ -64,7 +60,14 @@ const AppHeader = () => {
         </CHeaderToggler>
         <CHeaderNav className="ms-auto">
           <CNavItem>
-            <CNavLink >
+            <CButton
+                onClick={toggleAddMenu}
+            >
+              <CIcon icon={cilPlus} size="lg" />
+            </CButton>
+          </CNavItem>
+          <CNavItem>
+            <CNavLink>
               <CIcon icon={cilAccountLogout} size="lg" />
             </CNavLink>
           </CNavItem>
